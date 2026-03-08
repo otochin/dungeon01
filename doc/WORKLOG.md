@@ -82,6 +82,20 @@
 
 ---
 
+### 6. バフ・スイッチデバイスの上昇値パラメータ化と random_switch_teleporter の表示処理明示
+
+- **依頼**: healer buff / warrior HP buff / knight HP buff の各スイッチデバイスで上昇値をプロパティから指定可能にする。random_switch_teleporter で「最初にランダムに選んだ3つのスイッチの表示をオンにする」処理を追加。のちに GetCreativeObjectsWithTag 置き換えによるエラーを解消するため従来 API に戻す対応。
+- **実施内容**:
+  - **healer_buff_switch_device**: `@editable HealBonusAmount : float = 30.0` を追加。`AddHealerHeal(HealBonusAmount)` で適用。表示用に `HealBonusAmountAsInt()` と `HealBuffAppliedMessage` を追加（`ToInternalInt` は npc_health_hud のメソッドのため未使用・自前の int 変換に変更）。
+  - **warrior_hp_buff_switch_device**: `@editable HpBonusAmount : float = 100.0` を追加。`GetMaxHealth() + HpBonusAmount` で適用。`WarriorHpBuffAppliedMessage` と `HpBonusAmountAsInt()` を追加。
+  - **knight_hp_buff_switch_device**: `@editable HpBonusAmount : float = 80.0` を追加。同様に `KnightHpBuffAppliedMessage` と `HpBonusAmountAsInt()` を追加。
+  - **FindCreativeObjectsWithTag への置き換え**: ally_stat_modifier と npc_healer_behavior で `FindCreativeObjectsWithTag`（generator）を使うよう変更したが、`self` 未定義・複数オーバーロード・`for` の第一引数が generator でない・失敗コンテキスト内の return/fail 等でエラーが発生。従来の `GetCreativeObjectsWithTag` に戻した（非推奨警告は残る）。
+  - **random_switch_teleporter_device**: 「最初に、ランダムに選んだ３つのスイッチの表示をオンにする」処理をコメント付きブロックで明示。選定後に全スイッチを Disable → VisibleSwitches のみ Enable → 表示位置へ TeleportTo の流れを整理。
+  - **doc/SPECIFICATION.md**: healer_buff_switch_device / warrior_hp_buff_switch_device / knight_hp_buff_switch_device の @editable 一覧と OnSwitchTurnedOn の説明を更新。
+- **成果物**: `Content/ally_stat_modifier.verse`（更新）、`Content/npc_healer_behavior.verse`（FindHUD を GetCreativeObjectsWithTag に戻す）、`Content/random_switch_teleporter.verse`（表示オン処理の明示）、`doc/SPECIFICATION.md`（更新）
+
+---
+
 ## 今後の追記について
 
 大きな変更やリリースごとに、日付と実施内容をこの WORKLOG に追記することを推奨する。

@@ -149,10 +149,11 @@
 | 種別 | 名前 | 型 | 説明 |
 |------|------|-----|------|
 | @editable | Switch | switch_device | トリガーとなるスイッチ |
+| @editable | HealBonusAmount | float | ヒーラー回復ボーナスの上昇値（既定: 30.0） |
 | var | AlreadyApplied | logic | 1 回だけ適用するためのフラグ |
 
 - **FindHUDByTag()** (decides, transacts): GetCreativeObjectsWithTag(health_hud_tag{}) で HUD を取得し、npc_health_hud にキャストして返す
-- **OnSwitchTurnedOn**: AlreadyApplied が false のとき、FindHUDByTag で HUD を取得し AddHealerHeal(30.0) を実行。AlreadyApplied を true に設定（1 回限り）
+- **OnSwitchTurnedOn**: AlreadyApplied が false のとき、FindHUDByTag で HUD を取得し AddHealerHeal(HealBonusAmount) を実行。AlreadyApplied を true に設定（1 回限り）
 
 **warrior_hp_buff_switch_device**
 
@@ -160,11 +161,12 @@
 |------|------|-----|------|
 | @editable | Switch | switch_device | トリガーとなるスイッチ |
 | @editable | WarriorSpawner | npc_spawner_device | Warrior 用スポナー |
+| @editable | HpBonusAmount | float | 最大HPの上昇値（既定: 100.0） |
 | var | WarriorAgent | ?agent | スポーンした Warrior |
 | var | AlreadyApplied | logic | 1 回だけ適用するためのフラグ |
 
 - **OnWarriorSpawned**: スポーン時に WarriorAgent を保存
-- **OnSwitchTurnedOn**: Warrior がスポーン済みなら GetMaxHealth() + 100.0 を SetMaxHealth で設定。1 回限り
+- **OnSwitchTurnedOn**: Warrior がスポーン済みなら GetMaxHealth() + HpBonusAmount を SetMaxHealth で設定。1 回限り
 
 **knight_hp_buff_switch_device**
 
@@ -172,11 +174,12 @@
 |------|------|-----|------|
 | @editable | Switch | switch_device | トリガーとなるスイッチ |
 | @editable | KnightSpawner | npc_spawner_device | Knight 用スポナー |
+| @editable | HpBonusAmount | float | 最大HPの上昇値（既定: 80.0） |
 | var | KnightAgent | ?agent | スポーンした Knight |
 | var | AlreadyApplied | logic | 1 回だけ適用するためのフラグ |
 
 - **OnKnightSpawned**: スポーン時に KnightAgent を保存
-- **OnSwitchTurnedOn**: Knight がスポーン済みなら GetMaxHealth() + 80.0 を SetMaxHealth で設定。1 回限り
+- **OnSwitchTurnedOn**: Knight がスポーン済みなら GetMaxHealth() + HpBonusAmount を SetMaxHealth で設定。1 回限り
 
 #### 依存
 
@@ -344,7 +347,7 @@
 
 ```
 [ally_stat_modifier]
-  healer_buff_switch_device → FindHUDByTag(health_hud_tag) → npc_health_hud.AddHealerHeal(30.0)
+  healer_buff_switch_device → FindHUDByTag(health_hud_tag) → npc_health_hud.AddHealerHeal(HealBonusAmount)
 
 [npc_healer_behavior]
   FindHUD() → npc_health_hud.GetHealerHealBonus() で回復量に加算

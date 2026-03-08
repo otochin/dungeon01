@@ -49,11 +49,11 @@ random_switch_teleporter_device := class(creative_device):
                             set selected += array{s2}
         set VisibleSwitches = selected
 
+        # 最初に、ランダムに選んだ３つのスイッチの表示をオンにする
         for (sw : Switches):
             sw.Disable()
         for (sw : VisibleSwitches):
             sw.Enable()
-
         MyTransform := GetTransform()
         Pos := MyTransform.Translation
         NewRot := MakeRotationFromYawPitchRollDegrees(90.0, 0.0, 0.0)

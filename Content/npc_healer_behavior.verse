@@ -23,7 +23,7 @@ npc_healer_behavior := class(npc_behavior):
     
     var TrackedAllies : []?agent = array{}
 
-    # タグで HUD を取得（GetCreativeObjectsWithTag は非推奨だが、generator 対応のため従来 API を使用）
+    # タグで HUD を取得（GetCreativeObjectsWithTag は非推奨だが、FindCreativeObjectsWithTag は generator/型のため従来 API を使用）
     FindHUD()<decides><transacts> : npc_health_hud = {
         HUDObjects := GetCreativeObjectsWithTag(health_hud_tag{})
         FirstHUDObj := HUDObjects[0]
