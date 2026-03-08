@@ -51,6 +51,7 @@
 | `Content/npc_healer_behavior.verse` | ヒーラー NPC が自分・仲間・プレイヤーを範囲内で回復。HUD と連携 |
 | `Content/npc_teleport_handler.verse` | プレイヤーがテレポートしたときに生存 NPC をプレイヤー周囲に円形オフセットで再配置 |
 | `Content/elimination_debugger.verse` | 撃破マネージャーの撃破イベントをトラッカーの進捗 +1 に橋渡し |
+| `Content/npc_item_granter_switch.verse` | スイッチ ON で指定 NPC に item_granter_device のアイテムを付与 |
 
 ---
 
@@ -268,6 +269,38 @@
 
 ---
 
+### 4.6 npc_item_granter_switch.verse
+
+#### 目的
+
+スイッチを ON にすると、指定した NPC スポナーからスポーンしている NPC に、指定したアイテムを付与（装備）する。アイテムの種類は `item_granter_device` 側でエディタから設定する。
+
+#### クラス: npc_item_granter_switch_device (creative_device)
+
+| 種別 | 名前 | 型 | 説明 |
+|------|------|-----|------|
+| @editable | Switch | switch_device | トリガーとなるスイッチ |
+| @editable | NPCSpawner | npc_spawner_device | アイテムを付与する NPC のスポナー |
+| @editable | ItemGranter | item_granter_device | 付与するアイテムを登録したアイテムグランター |
+| var | SpawnedAgent | ?agent | スポーンした NPC のエージェント参照 |
+
+- **OnBegin**: NPCSpawner の SpawnedEvent と Switch の TurnedOnEvent を購読
+- **OnNPCSpawned**: SpawnedAgent にスポーンしたエージェントを保存
+- **OnSwitchTurnedOn**: SpawnedAgent が存在すれば ItemGranter.GrantItem(TargetAgent) を実行。未スポーン時はログのみ出力
+
+#### 使い方（エディタ）
+
+1. マップに npc_item_granter_switch、NPC スポナー、アイテムグランターを配置する。
+2. アイテムグランターに付与したいアイテムを登録する（デバイスにアイテムをドロップして設定）。
+3. npc_item_granter_switch の詳細で Switch・NPCSpawner・ItemGranter に上記デバイスを割り当てる。
+4. ゲーム中に NPC をスポーンさせたあと、スイッチを ON にするとその NPC にアイテムが付与される。
+
+#### 依存
+
+- Fortnite Devices / Characters、Verse Simulation
+
+---
+
 ## 5. データフロー・モジュール連携
 
 ### 5.1 HUD を中心とした連携
@@ -291,6 +324,7 @@
 - **npc_healer_behavior**: `health_hud_tag` で HUD を取得し、クールダウン表示・回復力ボーナス連携。
 - **npc_teleport_handler**: スポナー・テレポーターのイベント購読のみ。他モジュールからは参照されない。
 - **elimination_debugger**: 撃破マネージャーとトラッカーを接続。他モジュールからは参照されない。
+- **npc_item_granter_switch**: スイッチ・NPC スポナー・アイテムグランターをエディタで指定。他モジュールからは参照されない。
 
 ### 5.3 デバイス配置
 
@@ -322,3 +356,4 @@
 | 日付 | 内容 |
 |------|------|
 | 2025-03-08 | 初版作成（コード全体解析に基づく） |
+| 2025-03-08 | npc_item_granter_switch.verse を追加（4.6 節・2.3 一覧・5.2）。作業ログ（WORKLOG.md）作成に伴い doc を更新 |
