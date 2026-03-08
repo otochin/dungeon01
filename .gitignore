@@ -1,0 +1,12 @@
+# UEFN / Build
+Binaries
+DerivedDataCache
+Intermediate
+Saved
+
+# IDE
+.vs
+.vscode
+
+# URC identity and cache (local sync state)
+.urc/

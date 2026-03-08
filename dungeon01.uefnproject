@@ -1,0 +1,64 @@
+{
+	"fileVersion": 15,
+	"title": "dungeon01",
+	"description": "",
+	"keyArt": "",
+	"docsUrl": "",
+	"apiAccess": "Private",
+	"compatibilityVersion": "39.50",
+	"requiredRedirectorStartingVersion": "39.40.50577083",
+	"editorPermissions": [],
+	"epicApp": "",
+	"sortPriority": 0,
+	"featureSet": "",
+	"plugins": [
+		{
+			"name": "dungeon01",
+			"bIsRoot": true,
+			"bIsPublic": false
+		}
+	],
+	"dataSets":
+	{
+		"matchmaking":
+		{
+			"maxPlayers": 1,
+			"maxTeamCount": 1,
+			"maxTeamSize": 1,
+			"maxSocialPartySize": 1,
+			"allowJoinInProgress": true,
+			"allowSquadFillOption": false,
+			"islandQueuePrivacy": "Public",
+			"minPlayers": 1,
+			"overtimePlayerTarget": 1,
+			"queueMainDuration": 5,
+			"queueOvertimeDuration": 5,
+			"useSkillBasedMatchmaking": false,
+			"ratingType": "",
+			"version": 1
+		},
+		"experimental":
+		{
+			"sceneGraph":
+			{
+				"bIsSceneGraphSystemAllowed": true,
+				"bEnableOneFilePerEntity": false
+			},
+			"personaDevice":
+			{
+				"bEnablePersonaDevice": false
+			},
+			"version": 1
+		}
+	},
+	"bindings":
+	{
+		"projectId": "8d144710-423e-a2d2-a9a7-97bcc25841eb",
+		"modules":
+		{
+			"dungeon01": "be4d4b62-40d0-bdb0-1c6c-a29f99c2057b"
+		},
+		"bSuppressAutomaticVersePathAssignment": false,
+		"projectVersePath": "/whys@fortnite.com/dungeon01"
+	}
+}
