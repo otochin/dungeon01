@@ -66,6 +66,22 @@
 
 ---
 
+### 5. random_switch_teleporter デバイスの追加と修正
+
+- **依頼**: 複数スイッチを配列で設定し、オフのものをランダムに3つ選んでデバイス位置に横並び表示。いずれか1つがONになったら3つを非表示にし、設定したテレポーターを表示する。のちに「毎回違う3つ」「非表示」「角度90度」「高さ調整」などの要望に対応。
+- **実施内容**:
+  - `Content/random_switch_teleporter.verse` を新規作成。
+  - **設定**: Switches（[]switch_device）、Teleporter（teleporter_device）、Spacing、HeightOffset。オフのスイッチのみを集め、その中から3つを選んでデバイス位置に横並びで配置（Enable/Disable で表示制御）。いずれかONで全スイッチを Disable し、テレポーターを Enable。
+  - **スクリプトエラー対応**: GetRandomInt の no_rollback により transacts な OnBegin 内で使用不可のため、ランダム選択は断念。GetCreativeObjectsWithTag 非推奨・FindCreativeObjectsWithTag への置き換えは self/first/fail/break 等でエラーになるため ally_stat_modifier・npc_healer_behavior は従来 API のままに維持。switch_device/teleporter_device に Hide/Show がないため、非表示は「全スイッチを HiddenPosition（Z=-100000）へ TeleportTo してから Disable」で対応。rotation 同士の * が無いため、90度は MakeRotationFromYawPitchRollDegrees(90,0,0) のみを適用。GetTransform/TeleportTo の decides・失敗コンテキスト、配列アクセス・Mod の失敗コンテキストを整理。
+  - **高さ**: HeightOffset（既定 120 cm）を追加し、スイッチを目の高さ付近に配置。
+  - **角度**: スイッチの向きを Yaw 90 度に固定。
+  - **非表示**: いずれかON時に全 Switches を HiddenPosition へ TeleportTo したうえで Disable。
+  - **毎回違う3つ**: GetRandomInt が使えないため、GetSimulationElapsedTime() から開始インデックスを算出（Mod[Int[経過秒*1000]*1237, offList.Length]）。5つあれば5通りの組み合わせのいずれかが選ばれる。フォールバックで先頭3つを採用。
+- **成果物**: `Content/random_switch_teleporter.verse`
+- **依存**: Fortnite Devices、Verse Simulation、Verse、SpatialMath
+
+---
+
 ## 今後の追記について
 
 大きな変更やリリースごとに、日付と実施内容をこの WORKLOG に追記することを推奨する。

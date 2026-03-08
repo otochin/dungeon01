@@ -10,11 +10,11 @@ healer_buff_switch_device := class(creative_device):
 
     var AlreadyApplied : logic = false
 
-    # タグで HUD を取得（キャストが decides のため、失敗コンテキストで呼ぶ）
+    # タグで HUD を取得（GetCreativeObjectsWithTag は非推奨だが、FindCreativeObjectsWithTag は generator/self のため従来 API を使用）
     FindHUDByTag()<decides><transacts> : npc_health_hud = {
         HUDObjects := GetCreativeObjectsWithTag(health_hud_tag{})
-        First := HUDObjects[0]
-        npc_health_hud[First]
+        FirstHUDObj := HUDObjects[0]
+        npc_health_hud[FirstHUDObj]
     }
 
     OnBegin<override>() : void =

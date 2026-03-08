@@ -52,6 +52,7 @@
 | `Content/npc_teleport_handler.verse` | プレイヤーがテレポートしたときに生存 NPC をプレイヤー周囲に円形オフセットで再配置 |
 | `Content/elimination_debugger.verse` | 撃破マネージャーの撃破イベントをトラッカーの進捗 +1 に橋渡し |
 | `Content/npc_item_granter_switch.verse` | スイッチ ON で指定 NPC に item_granter_device のアイテムを付与 |
+| `Content/random_switch_teleporter.verse` | オフのスイッチから経過時間で3つを選び横並び表示。いずれかONで全スイッチ非表示＋テレポーター表示 |
 
 ---
 
@@ -301,6 +302,42 @@
 
 ---
 
+### 4.7 random_switch_teleporter.verse
+
+#### 目的
+
+複数スイッチを配列で設定し、オフのものから「経過時間ベースのオフセット」で3つを選び、デバイス位置に横並びで表示する。いずれか1つでもONになると全スイッチを無表示（マップ外へ移動＋無効化）し、設定したテレポーターを有効化する。GetRandomInt の no_rollback 制約のため真の乱数は使わず、GetSimulationElapsedTime() で開始インデックスを変え、毎回異なる3つの組み合わせになり得るようにしている。
+
+#### クラス: random_switch_teleporter_device (creative_device)
+
+| 種別 | 名前 | 型 | 説明 |
+|------|------|-----|------|
+| @editable | Switches | []switch_device | 候補となるスイッチの配列 |
+| @editable | Teleporter | teleporter_device | いずれかON時に表示するテレポーター |
+| @editable | Spacing | float | 横並びの間隔（cm）。既定: 200.0 |
+| @editable | HeightOffset | float | スイッチの高さオフセット（cm）。既定: 120.0 |
+| var | VisibleSwitches | []switch_device | 今回表示している3つ（以下） |
+| 定数 | HiddenPosition | vector3 | 非表示用の位置（Z=-100000 等） |
+| 定数 | HiddenRotation | rotation | 非表示時の回転 |
+
+- **OnBegin**: テレポーターを Disable。Switches のうち GetCurrentState が失敗する（オフの）ものを offList に集める。offList が4以上なら Int[GetSimulationElapsedTime()*1000]*1237 を Mod[..., offList.Length] して開始 offset を決め、offset から連続3つ（ループ）を selected とし、selected が空なら先頭3つを採用。VisibleSwitches に設定。全 Switches を Disable したうえで VisibleSwitches のみ Enable。デバイスの GetTransform() から位置を取得し、VisibleSwitches を Spacing・HeightOffset で横並びに TeleportTo（回転は Yaw 90度）。VisibleSwitches の TurnedOnEvent を購読。
+- **OnAnyVisibleSwitchTurnedOn**: 全 Switches を HiddenPosition へ TeleportTo してから Disable。テレポーターを Enable。
+
+#### 選択ロジック
+
+- オフのスイッチが4つ以上あるとき、開始インデックスを `Mod[Int[GetSimulationElapsedTime()*1000]*1237, offList.Length]` で算出。その位置から「連続3つ」（末尾で先頭にループ）を選ぶ。5つなら5通りの組み合わせのいずれかになる。
+- オフが3つ以下ならそのまま全て採用。Int/Mod が失敗した場合は先頭3つをフォールバック。
+
+#### 非表示について
+
+- switch_device に Hide/Show がないため、非表示は「HiddenPosition（Z=-100000 等）へ TeleportTo したうえで Disable」で実現している。
+
+#### 依存
+
+- Fortnite Devices、Verse Simulation、Verse（Mod）、SpatialMath
+
+---
+
 ## 5. データフロー・モジュール連携
 
 ### 5.1 HUD を中心とした連携
@@ -325,6 +362,7 @@
 - **npc_teleport_handler**: スポナー・テレポーターのイベント購読のみ。他モジュールからは参照されない。
 - **elimination_debugger**: 撃破マネージャーとトラッカーを接続。他モジュールからは参照されない。
 - **npc_item_granter_switch**: スイッチ・NPC スポナー・アイテムグランターをエディタで指定。他モジュールからは参照されない。
+- **random_switch_teleporter**: スイッチ配列・テレポーターをエディタで指定。経過時間で表示する3スイッチを決定。他モジュールからは参照されない。
 
 ### 5.3 デバイス配置
 
@@ -357,3 +395,4 @@
 |------|------|
 | 2025-03-08 | 初版作成（コード全体解析に基づく） |
 | 2025-03-08 | npc_item_granter_switch.verse を追加（4.6 節・2.3 一覧・5.2）。作業ログ（WORKLOG.md）作成に伴い doc を更新 |
+| 2025-03-08 | random_switch_teleporter.verse を追加（4.7 節・2.3 一覧・5.2）。経過時間で3スイッチ選択・非表示・90度回転・高さオフセット。作業ログに 5 を追記 |

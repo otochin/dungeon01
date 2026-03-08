@@ -23,16 +23,10 @@ npc_healer_behavior := class(npc_behavior):
     
     var TrackedAllies : []?agent = array{}
 
-    # --- GetCreativeObjectsWithTag を使用（GetPlayspace().GetObjectsWithTag は AI コンテキストで未定義のため）---
+    # タグで HUD を取得（GetCreativeObjectsWithTag は非推奨だが、generator 対応のため従来 API を使用）
     FindHUD()<decides><transacts> : npc_health_hud = {
-        # 1. グローバルの GetCreativeObjectsWithTag を使用
-        HUDObjects := GetCreativeObjectsWithTag(health_hud_tag{});
-        
-        # 2. 配列の最初の要素を取得
-        FirstHUDObj := HUDObjects[0];
-        
-        # 3. 直接 npc_health_hud クラスへキャストして返す
-        # [ ] 構文によるキャストは失敗の可能性があるため、<decides> 関数内で評価可能です
+        HUDObjects := GetCreativeObjectsWithTag(health_hud_tag{})
+        FirstHUDObj := HUDObjects[0]
         npc_health_hud[FirstHUDObj]
     }
 
